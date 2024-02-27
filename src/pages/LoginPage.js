@@ -3,20 +3,35 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import api from "../utils/api";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [user, setUser] = useState("");
+  const navigate = useNavigate();
+
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
       const response = await api.post("/user/login", { email, password });
-      console.log("logging in..", response);
-    } catch (error) {}
+      console.log("rrrr", response);
+      if (response.status === 200) {
+        setUser(response.data.user);
+        sessionStorage.setItem("token", response.data.token);
+        api.defaults.headers["authorization"] = "Bearer " + response.data.token;
+        setError("");
+        navigate("/todo");
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      setError(error.message);
+    }
   };
   return (
     <div className="display-center">
+      {error && <div className="control-red">{error}</div>}
       <Form className="login-box" onSubmit={handleLogin}>
         <h1>로그인</h1>
         <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -28,11 +43,12 @@ const LoginPage = () => {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Group className="display-column" controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
             placeholder="Password"
+            autoComplete="current-password"
             controlid="formBasicPassword"
             onChange={(event) => setPassword(event.target.value)}
           />

@@ -13,6 +13,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
+    event.preventDefault();
     try {
       if (password !== secondPassword) {
         throw new Error(
@@ -20,15 +21,15 @@ const RegisterPage = () => {
         );
       }
       const response = await api.post("/user", { name, email, password });
-      if (response.status == 200) {
-        navigate("/login");
+      console.log("rrrr", response);
+      if (response.status === 200) {
+        navigate("/");
       } else {
         throw new Error(response.data.error);
       }
     } catch (error) {
       setError(error.message);
     }
-    event.preventDefault();
   };
   return (
     <div className="display-center">
