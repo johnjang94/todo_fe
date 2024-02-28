@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { createRoot } from "react-dom/client";
@@ -6,7 +6,15 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import TodoPage from "./pages/TodoPage";
+import PrivateRoute from "./private/privateRoute";
 
+const [user, setUser] = useState(null)
+const getUser = async () => {
+  try {
+    const token = sessionStorage.getItem("token")
+    const response = api.get("/user/")
+  }
+}
 const router = createBrowserRouter([
   {
     path: "/",
@@ -22,7 +30,7 @@ const router = createBrowserRouter([
   },
   {
     path: "todo",
-    element: <TodoPage />,
+    element: <PrivateRoute user={user}><TodoPage /></PrivateRoute>,
   },
 ]);
 
